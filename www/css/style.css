@@ -1,0 +1,14 @@
+body {
+  padding-top: 50px;
+}
+
+.pad-top {
+  padding-top: 30px;
+}
+
+ul.nav li.dropdown:hover > ul.dropdown-submenu {
+  top: 0;
+  left: 95%;
+  position: absolute;
+  display: block;
+}

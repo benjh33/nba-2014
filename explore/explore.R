@@ -10,7 +10,7 @@ choiceList <- list(
 )
 
 output$teamScatter <- renderGgd3({
-  team_summary$selected_team <- ifelse(team_summary$tm %in% input$teamRecord, 'selected', '')
+  team_summary$selected_team <- ifelse(team_summary$tm %in% input$teamRecord, 'selected', 'not selected')
   ggd3(team_summary, layers =list(l1=list(geom=list(type='point'),
                                              stat=list(
                                                y='identity',
@@ -66,7 +66,7 @@ output$teamRecord <- renderPlot({
 teams <- sort(unique(team_summary$tm))
 output$teamRecord_buttons <- renderUI({
   column(width = 12,
-         selectInput('teamRecord', 'teams', choices = teams,
+         selectInput('teamRecord', '', choices = teams,
                      selected=sample(teams, 3), multiple = TRUE)
          )
 
@@ -76,22 +76,22 @@ output$teamScatter_buttons <- renderUI({
          column(width = 3,
                 selectInput('teamx', 'x',
                             choices = choiceList,
-                            selected = 'SHOT_DIST', width = "90%")
+                            selected = 'SHOT_DIST', width = "100%")
          ),
          column(width = 3,
                 selectInput('teamy', 'y',
                             choices = choiceList,
-                            selected = 'DEF_DISTANCE', width = "90%")
+                            selected = 'DEF_DISTANCE', width = "100%")
          ),
          column(width = 3,
                 selectInput('teamColor', 'fill',
                             choices = choiceList,
-                            selected = 'PROP_3', width = "90%")
+                            selected = 'PROP_3', width = "100%")
          ),
          column(width = 3,
                 selectInput('teamSize', 'size',
                             choices = choiceList,
-                            selected = 'DRIBBLES', width = "90%")
+                            selected = 'DRIBBLES', width = "100%")
          ),
          class = 'pad-top'
   )

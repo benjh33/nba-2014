@@ -2,18 +2,22 @@
 # list of tools - could be dynamicaly generated
 menus = tagList(
   tabPanel("Explore", id='explore',
-           column(width = 5,
+           column(width = 4,
                   includeMarkdown('explore/explore.md'),
                   uiOutput('teamRecord_buttons'),
                   plotOutput('teamRecord')
                   ),
-           column(width = 7,
+           column(width = 7, offset = 1,
                   uiOutput('teamScatter_buttons'),
                   h2("Average performance by team"),
                   ggd3Output('teamScatter')
                   )
   ),
-  tabPanel("Models", id='models', column(width = 12)
+  tabPanel("Models", id='models',
+           column(width = 12,
+                  uiOutput('model_description'),
+                  uiOutput('models')
+                  )
   ),
   tabPanel("Predict", id='predict', column(width = 12)
   )
@@ -22,9 +26,9 @@ menus = tagList(
 shinyUI(
   bootstrapPage(
     tags$head(tags$link(rel='stylesheet', type='text/css', href='css/style.css')),
-    nav(menus, id='tool', brand='explore'),
+    nav(menus, id='tool', brand='models'),
     fluidRow(column(width=10,
-                    tabs(menus, id='tabs', brand='explore'),
+                    tabs(menus, id='tabs', brand='models'),
                     offset = 1
     )
     ),

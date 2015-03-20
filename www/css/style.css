@@ -13,13 +13,18 @@ ul.nav li.dropdown:hover > ul.dropdown-submenu {
   display: block;
 }
 
-#teamScatter .background{
+
+#preds .background,#teamScatter .background{
   fill: white;
 }
 
-#teamScatter .domain, .tick line{
+#preds .domain, .tick line, #teamScatter .domain, .tick line{
   stroke: none
+}
+.facet-label-x {
+  stroke: none;
 }
 #teamScatter circle.geom-point {
   stroke-width: 2 !important;
 }
+

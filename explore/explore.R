@@ -1,5 +1,13 @@
 # players
-
+choiceList <- list(
+  "shot clock" = "SHOT_CLOCK",
+  "shot distance" = "SHOT_DIST",
+  "dribbles before shot" = "DRIBBLES",
+  "touch time" = "TOUCH_TIME",
+  "number of shots" = "SHOTS",
+  "distance to defender" = "DEF_DISTANCE",
+  "proportion 3 pointers" = "PROP_3"
+)
 
 output$teamScatter <- renderGgd3({
   team_summary$selected_team <- ifelse(team_summary$tm %in% input$teamRecord, 'selected', '')
@@ -67,22 +75,22 @@ output$teamScatter_buttons <- renderUI({
   column(width = 12,
          column(width = 3,
                 selectInput('teamx', 'x',
-                            choices = selectList(setdiff(names(team_summary),c('tm'))),
+                            choices = choiceList,
                             selected = 'SHOT_DIST', width = "90%")
          ),
          column(width = 3,
                 selectInput('teamy', 'y',
-                            choices = selectList(setdiff(names(team_summary),c('tm'))),
+                            choices = choiceList,
                             selected = 'DEF_DISTANCE', width = "90%")
          ),
          column(width = 3,
                 selectInput('teamColor', 'fill',
-                            choices = selectList(setdiff(names(team_summary),c('tm'))),
+                            choices = choiceList,
                             selected = 'PROP_3', width = "90%")
          ),
          column(width = 3,
                 selectInput('teamSize', 'size',
-                            choices = selectList(setdiff(names(team_summary),c('tm'))),
+                            choices = choiceList,
                             selected = 'DRIBBLES', width = "90%")
          ),
          class = 'pad-top'

@@ -2,7 +2,14 @@
 
 
 output$teamScatter <- renderGgd3({
-  ggd3(team_summary, layers = list(l1 = list(geom='point'),
+  ggd3(team_summary, layers = list(l1 = list(geom='point',
+                                             stat=list(
+                                               y='identity',
+                                               x='identity',
+                                               fill='identity',
+                                               color='identity',
+                                               size='identity'
+                                             )),
                                    l2 = list(geom='text')),
         aes = list(x=input$teamx, y = input$teamy,
                    fill=input$teamColor, color=input$teamColor,

@@ -1,5 +1,4 @@
 library(dplyr)
-library(ggd3)
 library(ggplot2)
 library(stringr)
 library(bbscrapeR)
@@ -7,6 +6,7 @@ library(ggvis)
 library(htmlwidgets)
 library(htmltools)
 # library(metricsgraphics)
+library(ggd3)
 library(doMC)
 library(MASS)
 

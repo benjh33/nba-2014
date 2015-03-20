@@ -61,7 +61,7 @@ output$preds <- renderGgd3({
        aes = list(x="margin", y='value', fill='highlight', size='highlight'),
        settings = list(facet = list(x='variable', nrows=1,
                                     titleSize=c(30,0)),
-                       lineWidth = '2',
+                       lineWidth = 2,
                        lineType = 'none',
                        sizeRange = c(4, 8),
                        dtypes = list(highlight = c('string', 'few')),

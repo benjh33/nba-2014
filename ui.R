@@ -26,9 +26,9 @@ menus = tagList(
 shinyUI(
   bootstrapPage(
     tags$head(tags$link(rel='stylesheet', type='text/css', href='css/style.css')),
-    nav(menus, id='tool', brand='models'),
+    nav(menus, id='tool', brand='explore'),
     fluidRow(column(width=10,
-                    tabs(menus, id='tabs', brand='models'),
+                    tabs(menus, id='tabs', brand='explore'),
                     offset = 1
     )
     ),

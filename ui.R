@@ -19,7 +19,10 @@ menus = tagList(
                   uiOutput('models')
                   )
   ),
-  tabPanel("Predict", id='predict', column(width = 12)
+  tabPanel("Predict", id='predict',
+           column(width = 12,
+                  uiOutput('predict_description')
+                  )
   )
 )
 

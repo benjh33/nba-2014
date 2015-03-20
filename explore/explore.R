@@ -11,15 +11,16 @@ choiceList <- list(
 
 output$teamScatter <- renderGgd3({
   team_summary$selected_team <- ifelse(team_summary$tm %in% input$teamRecord, 'selected', 'not selected')
-  ggd3(team_summary, layers =list(l1=list(geom=list(type='point'),
+  ggd3(team_summary, layers =list(l1=list(geom=list(type='point',
+                                                    mergeOn=list(c('tm')),
+                                                    omit=c('selected_team')),
                                              stat=list(
                                                y='identity',
                                                x='identity',
                                                fill='identity',
                                                color='identity',
                                                size='identity'
-                                             )),
-                                   l2 = list(geom='text')),
+                                             ))),
         aes = list(x=input$teamx, y = input$teamy,
                    fill=input$teamColor,
                    size=input$teamSize,
@@ -29,7 +30,7 @@ output$teamScatter <- renderGgd3({
                         margins = list(left=50, bottom=50),
                         width = 600,
                         height = 600,
-                        colorScale = list(scale=list(range=c('none', 'black'))),
+                        colorScale = list(scale=list(range=c('none', 'yellow'))),
                         xScale=list(axis=list(ticks=4)),
                         yScale=list(axis=list(ticks=4)),
                         fillScale=list(scale=list(

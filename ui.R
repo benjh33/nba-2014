@@ -12,13 +12,8 @@ menus = tagList(
            column(width = 7,
                   uiOutput('teamScatter_buttons'),
                   h2("Average performance by team"),
-                  ggd3Output('teamScatter'),
-                  fluidRow(
-                    column(width = 10, offset=1,
-                           p('All data are simple averages', class='small')
-                    )
+                  ggd3Output('teamScatter')
                   )
-           )
   ),
   tabPanel("Models", id='models', column(width = 12)
   ),

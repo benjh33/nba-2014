@@ -12,3 +12,14 @@ ul.nav li.dropdown:hover > ul.dropdown-submenu {
   position: absolute;
   display: block;
 }
+
+#teamScatter .background{
+  fill: white;
+}
+
+#teamScatter .domain, .tick line{
+  stroke: none
+}
+#teamScatter circle.geom-point {
+  stroke-width: 2 !important;
+}

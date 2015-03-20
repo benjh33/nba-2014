@@ -1,11 +1,3 @@
-library(shiny)
-library(ggplot2)
-library(scales)
-library(ggd3)
-library(htmlwidgets)
-library(htmltools)
-library(dplyr)
-library(reshape2)
 
 shinyServer(function(input, output, session) {
 

@@ -13,6 +13,7 @@ choiceList <- list(
 
 output$teamScatter <- renderGgd3({
   team_summary$selected_team <- ifelse(team_summary$tm %in% input$teamRecord, 'selected', 'not selected')
+  team_summary <- team_summary[order(team_summary$selected_team), ]
   ggd3(team_summary, layers =list(l1=list(geom=list(type='point',
                                                     mergeOn=list(c('tm')),
                                                     omit=c('selected_team')),

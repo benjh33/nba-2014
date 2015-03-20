@@ -208,12 +208,13 @@ rm(out)
 # get aggregated shot data from allshots,
 # and merge with nba_wl_games to be used as predictors
 data(allshots)
-allshots$date <- as.character(allshots$date)
-allshots$tm <- sapply(allshots$MATCHUP, function(s) {
-  str_extract_all(s, "([A-Z]{3})")[[1]][2]
-})
+# allshots$date <- as.character(allshots$date)
+# allshots$tm <- sapply(allshots$MATCHUP, function(s) {
+#   str_extract_all(s, "([A-Z]{3})")[[1]][2]
+# })
 allshots$tm <- as.character(team_lookup[allshots$tm])
 allshots <- filter(allshots, tm != "NULL")
+devtools::use_data(allshots, overwrite = TRUE)
 allshots_period_sum <- plyr::ddply(allshots, plyr::.(MATCHUP, PERIOD, tm, date),
                                    summarise,
                                    SHOT_CLOCK = mean(SHOT_CLOCK, na.rm=TRUE),
@@ -224,7 +225,7 @@ allshots_period_sum <- plyr::ddply(allshots, plyr::.(MATCHUP, PERIOD, tm, date),
                                    DEF_DISTANCE = mean(CLOSE_DEF_DIST, na.rm=TRUE),
                                    PROP_3 = sum(PTS_TYPE == 3)/length(PTS_TYPE),
                                    PROP_MADE = sum(SHOT_RESULT=='made')/length(SHOT_RESULT),
-                                   PROP_3_MADE = sum(SHOT_RESULT=='made' && PTS_TYPE==3)/sum(PTS_TYPE == 3),
+                                   PROP_3_MADE = sum(SHOT_RESULT=='made' & PTS_TYPE==3)/sum(PTS_TYPE == 3),
                                    n = length(MATCHUP),
                                    .parallel = TRUE
 )
@@ -238,7 +239,7 @@ allshots_game_sum <- plyr::ddply(allshots, plyr::.(MATCHUP, tm, date), summarise
                                  DEF_DISTANCE = mean(CLOSE_DEF_DIST, na.rm=TRUE),
                                  PROP_3 = sum(PTS_TYPE == 3)/length(PTS_TYPE),
                                  PROP_MADE = sum(SHOT_RESULT=='made')/length(SHOT_RESULT),
-                                 PROP_3_MADE = sum(SHOT_RESULT=='made' && PTS_TYPE==3)/sum(PTS_TYPE == 3),
+                                 PROP_3_MADE = sum(SHOT_RESULT=='made' & PTS_TYPE==3)/sum(PTS_TYPE == 3),
                                  n = length(MATCHUP),
                                  .parallel = TRUE
 )

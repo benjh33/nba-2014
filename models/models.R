@@ -40,11 +40,11 @@ output$models <- renderUI({
 ## markdown and upsets table
 output$model_description <- renderUI({
   fluidRow(
-    column(width = 5, offset = 1,
+    column(width = 5, offset = 0,
         includeMarkdown('models/models.md'),
         hr()
     ),
-    column(width = 5, offset = 1,
+    column(width = 7, offset = 0,
            selectInput('winProbColumn', 'Sort by low probability at:',
                        choices = list('Q1' = 'q1_win_prob',
                                       'Q2' = 'q2_win_prob',
@@ -69,8 +69,9 @@ output$upsets <- renderDataTable({
   upsets[1:100, c('link', 'winner', input$winProbColumn)]
   },
   options = list(
-    searching = FALSE,
     paging = TRUE,
+    ordering = FALSE,
+    info = FALSE,
     pageLength = 5,
     callback = I(
       "function(oTable) {$('.dataTables_info').remove();}"
@@ -79,6 +80,7 @@ output$upsets <- renderDataTable({
       'function(row, data) {
           var text = $("td:eq(0)", row).text();
           $("td:eq(0)", row)[0].innerHTML = text;
+          $(".dataTables_length").remove()
         }'
     ))
 )

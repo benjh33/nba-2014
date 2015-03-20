@@ -5,5 +5,5 @@ All the data were taken from [nba.com](nba.com) with the help of the `R` package
 
 At right is a scatterplot of season averages of basic shot statistics used in the models. (Figures in the predictive models are aggregated at game level.) Circles representing teams selected below are outlined in yellow. Values for the fill scale go from blue (low) to red (high).
 
-Below is a handy view for comparing relative performance between 3 to 6 teams. Blue and red bars represent wins and losses, respectively. The length maps to the point margin. Philedelphia had a rough go last year.
+Below is a handy view for comparing relative performance between 3 to 6 teams. Blue and red bars represent wins and losses, respectively. The length maps to the point margin. Philadelphia had a rough go last year.
 

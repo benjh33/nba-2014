@@ -6,4 +6,4 @@ Mousing over any circle shows the win probability with that margin and the end o
 
 All available games were used, no cross-validation or test group was used to guage the predictive accuracy. It should be assumed these are grossly overfit models, and coefficients should be interpreted as rough guidelines for descriptive purposes.
 
-In an effort to do something useful with these models, the 100 biggest upsets based on score information at the selected quarter are browseable at right with links to the [nba.com](www.nba.com) highlight video.
+In an effort to do something useful with these models, the 100 biggest upsets based on score information at the selected period are browseable at right with links to the [nba.com](www.nba.com) highlight video.

@@ -1,6 +1,4 @@
 
-source('shinyUtil.R', local = TRUE)
-
 # list of tools - could be dynamicaly generated
 menus = tagList(
   tabPanel("Explore", id='explore',

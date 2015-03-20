@@ -10,7 +10,7 @@ library(ggd3)
 library(doMC)
 library(MASS)
 
-registerDoMC(cores = 4)
+registerDoMC(cores = 2)
 source('shinyUtil.R', local = TRUE)
 
 data(players)

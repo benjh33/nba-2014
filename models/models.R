@@ -1,9 +1,15 @@
 # nothing.
+allvars <- c('WIN', 'Q1_diff', 'Q2_diff', 'Q3_diff')
+nba_wl_games <- nba_wl_games[complete.cases(nba_wl_games[,allvars]), ]
 m1 <- glm(WIN ~ Q1_diff, data=nba_wl_games, family=binomial, model = FALSE)
 m2 <- glm(WIN ~ Q1_diff + Q2_diff, data=nba_wl_games, family=binomial, model = FALSE)
 m3 <- glm(WIN ~ Q1_diff + Q2_diff + Q3_diff,
           data=nba_wl_games, family=binomial, model = FALSE)
-# predict(m1, newdata = data.frame(Q1_diff = 10), type = 'response')
+
+nba_wl_games$q1_win_prob <- m1$fitted.values
+nba_wl_games$q2_win_prob <- m2$fitted.values
+nba_wl_games$q3_win_prob <- m3$fitted.values
+
 output$models <- renderUI({
   fluidRow(
     column(width = 2,
@@ -31,13 +37,51 @@ output$models <- renderUI({
   )
 })
 
+## markdown and upsets table
 output$model_description <- renderUI({
   fluidRow(
-    column(width = 8, offset = 2,
-        includeMarkdown('models/models.md')
-    )
+    column(width = 5, offset = 1,
+        includeMarkdown('models/models.md'),
+        hr()
+    ),
+    column(width = 5, offset = 1,
+           selectInput('winProbColumn', 'Sort by low probability at:',
+                       choices = list('Q1' = 'q1_win_prob',
+                                      'Q2' = 'q2_win_prob',
+                                      'Q3' = 'q3_win_prob'
+                                      ),
+                       selected = 'Q1',
+                       width = "20%"),
+           dataTableOutput('upsets')
+    ),
+    class='pad-top'
   )
 })
+
+# filter for teams that won and sort by least likely to win.
+output$upsets <- renderDataTable({
+  upsets <- subset(nba_wl_games, WIN == 1)
+  upsets <- upsets[order(upsets[, input$winProbColumn ], decreasing = FALSE),]
+  upsets$winner <- upsets$tm
+  upsets$link <- sprintf('<a href="http://www.nba.com/%s" target="_blank">%s</a>',
+                         upsets$video, upsets$MATCHUP)
+  upsets[, input$winProbColumn ] <- percent(upsets[, input$winProbColumn ])
+  upsets[1:100, c('link', 'winner', input$winProbColumn)]
+  },
+  options = list(
+    searching = FALSE,
+    paging = TRUE,
+    pageLength = 5,
+    callback = I(
+      "function(oTable) {$('.dataTables_info').remove();}"
+    ),
+    rowCallback = I(
+      'function(row, data) {
+          var text = $("td:eq(0)", row).text();
+          $("td:eq(0)", row)[0].innerHTML = text;
+        }'
+    ))
+)
 
 output$preds <- renderGgd3({
   newd <- data.frame(
@@ -50,11 +94,11 @@ output$preds <- renderGgd3({
                                           Q3_diff = -30:30), type='response')
   )
   newd <- melt(newd, id.vars = 'margin')
-  newd$variable <- as.character(newd$variable)
+  newd$variable <- gsub('_', ' ', as.character(newd$variable))
   newd$highlight <- '0'
-  newd[(newd$margin == input$mq1) & (newd$variable == 'q1_margin'), 'highlight'] <- '1'
-  newd[newd$margin == input$mq2 & newd$variable == 'q2_margin', 'highlight'] <- '1'
-  newd[newd$margin == input$mq3 & newd$variable == 'q3_margin', 'highlight'] <- '1'
+  newd[(newd$margin == input$mq1) & (newd$variable == 'q1 margin'), 'highlight'] <- '1'
+  newd[newd$margin == input$mq2 & newd$variable == 'q2 margin', 'highlight'] <- '1'
+  newd[newd$margin == input$mq3 & newd$variable == 'q3 margin', 'highlight'] <- '1'
   ggd3(data = newd,
        height = '200px',
        layers = list(l1=list(geom='line'), l2=list(geom='point')),
@@ -75,8 +119,8 @@ output$preds <- renderGgd3({
 })
 output$m1table <- renderDataTable({
     df <- as.data.frame(round(summary(m1)$coef[,1:2], 3))
-    df$coef <- rownames(df)
-    df <- df[, c('coef', 'Estimate', 'Std. Error')]
+    df$Var. <- rownames(df)
+    df <- df[, c('Var.', 'Estimate', 'Std. Error')]
     df
   },
   options = list(

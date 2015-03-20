@@ -6,6 +6,9 @@ library(dplyr)
 library(ggd3)
 library(ggplot2)
 library(stringr)
+library(reshape2)
+library(doMC)
+registerDoMC(cores = 4)
 
 team_lookup <- list(
   BKN = "nets",
@@ -90,7 +93,7 @@ allshots$SECONDS <- as.numeric(str_extract(allshots$GAME_CLOCK,
 devtools::use_data(allshots, overwrite = TRUE)
 
 
-data(allshots)
+
 # boxes is an unfortunately named dataset that initially would
 # hold boxscores. It holds all three available datasets from
 # bbscrapeR's 'rebound' function for the 2013-2014 season
@@ -183,7 +186,6 @@ prep_pbpev <- function(df) {
   filter(pbpev, prd %in% c(1,2,3,4))
 }
 data(boxes)
-devtools::use_data(boxes, overwrite = TRUE)
 
 out <- plyr::ldply(boxes, function(d) {
   bs <- d[['boxscore//players']] %>% as.data.frame %>% prep_bs_player
@@ -255,10 +257,9 @@ allshots_period_sum <- dcast(melt(allshots_period_sum,
 allshots_period_sum <- allshots_period_sum[, -grep(c("5_|6_|7_|NA_"), names(allshots_period_sum))]
 allshots_period_sum$date <- as.Date(allshots_period_sum$date)
 allshots_game_sum$date <- as.Date(allshots_game_sum$date)
-allshots_game_sum$MATCHUP <- NULL
 allshots_period_sum$MATCHUP <- NULL
 
-names(allshots_game_sum)[3:10] <- paste0(names(allshots_game_sum)[3:10], "_game")
+names(allshots_game_sum)[4:11] <- paste0(names(allshots_game_sum)[4:11], "_game")
 nba_wl_games$date <- as.Date(str_extract(nba_wl_games$gcd, "[0-9]{8}"), "%Y%m%d")
 nba_wl_games <- inner_join(nba_wl_games, allshots_period_sum)
 nba_wl_games <- inner_join(nba_wl_games, allshots_game_sum)
@@ -269,11 +270,20 @@ changeNames <- function(period, names_){
   paste0(names_, paste0("_", period))
 }
 
-for(i in 1:3){
-  n <- grep(paste0(i, "_"), names(nba_wl_games))
-  names(nba_wl_games)[n] <-changeNames(i, names(nba_wl_games)[n])
+for(i in 1:4){
+  n <- grep(paste0("^", i, "_"), names(nba_wl_games))
+  names(nba_wl_games)[n] <- changeNames(i, names(nba_wl_games)[n])
 }
-## clean up names
-toChange <- grep('diff|cumulative', names(nba_wl_games))
-names(nba_wl_games)[toChange] <- gsub("_[0-9]", '', names(nba_wl_games)[toChange])
+
+## getting highlight url
+data(boxes)
+nba_wl_games$video <- vector(mode='character', length=nrow(nba_wl_games))
+b <- boxes[[1]]
+for(b in boxes){
+  d <- unique(b[['boxscore//game']][,c('gcd', 'vid')])
+  rownames(d) <- d$gcd
+  inds <- nba_wl_games$gcd %in% rownames(d)
+  nba_wl_games$video[inds] <- d[nba_wl_games$gcd[inds], 'vid']
+}
 devtools::use_data(nba_wl_games, overwrite=TRUE)
+

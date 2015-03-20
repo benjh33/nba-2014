@@ -11,7 +11,7 @@ library(reshape2)
 library(ggd3)
 library(doMC)
 library(MASS)
-
+library(scales)
 registerDoMC(cores = 2)
 source('shinyUtil.R', local = TRUE)
 

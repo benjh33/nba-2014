@@ -9,7 +9,7 @@ menus = tagList(
                   ),
            column(width = 7, offset = 1,
                   uiOutput('teamScatter_buttons'),
-                  h2("Average performance by team"),
+                  h2("Averages by team"),
                   ggd3Output('teamScatter')
                   )
   ),

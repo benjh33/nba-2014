@@ -6,7 +6,9 @@ choiceList <- list(
   "touch time" = "TOUCH_TIME",
   "number of shots" = "SHOTS",
   "distance to defender" = "DEF_DISTANCE",
-  "proportion 3 pointers" = "PROP_3"
+  "proportion 3 pointers" = "PROP_3",
+  "proportion shots made" = "PROP_MADE",
+  "proportion 3pt. made" = "PROP_3_MADE"
 )
 
 output$teamScatter <- renderGgd3({

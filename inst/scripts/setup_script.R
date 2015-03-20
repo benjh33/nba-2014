@@ -57,9 +57,6 @@ while(endDate > (curDate + 6)) {
 }
 
 
-
-
-
 #### end single week processing
 # ---
 # get all shots for 2013-2014 season
@@ -129,11 +126,11 @@ bst <- as.data.frame(bst)
 # boxscore//players has data on the team's highest performing players
 # and the scores by quarter in pipe-delimited column "scr"
 
-## iterate through boxscore//players and split "scr" by "|"
+# iterate through boxscore//players and split "scr" by "|"
 prep_bs_player <- function(bspl) {
   scores <- str_split(bspl$scr, "\\|")
   scores <- apply(do.call(rbind, scores)[, c(1:4, 15)], 2, as.numeric)
-  colnames(scores) <- c('Q1', 'Q2', 'Q3', 'Q4', 'FINAL')
+  colnames(scores) <- c('P1', 'P2', 'P3', 'P4', 'FINAL')
   bspl <- cbind(bspl, scores)
   bspl <- plyr::ddply(bspl, plyr::.(url), function(d) {
     homeWin <- d[1, 'FINAL'] > d[2, 'FINAL']
@@ -142,7 +139,7 @@ prep_bs_player <- function(bspl) {
     } else {
       d$WIN <- c(0, 1)
     }
-    qs <- paste0('Q', seq(1, 4))
+    qs <- paste0('P', seq(1, 4))
     d[ ,paste0(qs, '_diff')] <- NA
     d[ ,paste0(qs, '_cumulative')] <- NA
     d$final_margin <- NA
@@ -167,8 +164,8 @@ prep_bs_player <- function(bspl) {
 }
 
 teamCumsum <- function(t1, t2){
-  t(apply(t1[, c('Q1', 'Q2', 'Q3', 'Q4')], 1, cumsum)) -
-    t(apply(t2[, c('Q1', 'Q2', 'Q3', 'Q4')], 1, cumsum))
+  t(apply(t1[, paste0('P', 1:4)], 1, cumsum)) -
+    t(apply(t2[, paste0('P', 1:4)], 1, cumsum))
 }
 
 prep_pbpev <- function(df) {
@@ -194,14 +191,19 @@ out <- plyr::ldply(boxes, function(d) {
                gcd + tm ~ prd + variable)
   return(inner_join(bs, pbp, by = c('gcd', 'tm')))
 }, .parallel = TRUE)
-rm(boxes)
 
 ## Game level scores/stats aggregated by quarter
 nba_wl_games <- out
+## getting highlight url
+for(b in boxes){
+  d <- unique(b[['boxscore//game']][,c('gcd', 'vid')])
+  rownames(d) <- d$gcd
+  inds <- nba_wl_games$gcd %in% rownames(d)
+  nba_wl_games$video[inds] <- d[nba_wl_games$gcd[inds], 'vid']
+}
+rm(boxes)
 rm(out)
-devtools::use_data(nba_wl_games)
 
-data(nba_wl_games)
 
 # get aggregated shot data from allshots,
 # and merge with nba_wl_games to be used as predictors
@@ -221,6 +223,8 @@ allshots_period_sum <- plyr::ddply(allshots, plyr::.(MATCHUP, PERIOD, tm, date),
                                    SHOTS = length(SHOT_NUMBER),
                                    DEF_DISTANCE = mean(CLOSE_DEF_DIST, na.rm=TRUE),
                                    PROP_3 = sum(PTS_TYPE == 3)/length(PTS_TYPE),
+                                   PROP_MADE = sum(SHOT_RESULT=='made')/length(SHOT_RESULT),
+                                   PROP_3_MADE = sum(SHOT_RESULT=='made' && PTS_TYPE==3)/sum(PTS_TYPE == 3),
                                    n = length(MATCHUP),
                                    .parallel = TRUE
 )
@@ -233,6 +237,8 @@ allshots_game_sum <- plyr::ddply(allshots, plyr::.(MATCHUP, tm, date), summarise
                                  SHOTS = length(SHOT_NUMBER),
                                  DEF_DISTANCE = mean(CLOSE_DEF_DIST, na.rm=TRUE),
                                  PROP_3 = sum(PTS_TYPE == 3)/length(PTS_TYPE),
+                                 PROP_MADE = sum(SHOT_RESULT=='made')/length(SHOT_RESULT),
+                                 PROP_3_MADE = sum(SHOT_RESULT=='made' && PTS_TYPE==3)/sum(PTS_TYPE == 3),
                                  n = length(MATCHUP),
                                  .parallel = TRUE
 )
@@ -243,6 +249,9 @@ allshots_team_sum <- plyr::ddply(allshots_game_sum, plyr::.(tm), summarise,
                                  DRIBBLES = weighted.mean(DRIBBLES, na.rm=TRUE),
                                  TOUCH_TIME = weighted.mean(TOUCH_TIME, n, na.rm=TRUE),
                                  SHOTS = mean(SHOTS),
+                                 PROP_MADE = weighted.mean(PROP_MADE, n, na.rm=TRUE),
+                                 PROP_3_MADE = weighted.mean(PROP_3_MADE, n,
+                                                             na.rm = TRUE),
                                  DEF_DISTANCE = weighted.mean(DEF_DISTANCE,
                                                               n, na.rm=TRUE),
                                  PROP_3 = weighted.mean(PROP_3, n, na.rm = TRUE),
@@ -259,7 +268,7 @@ allshots_period_sum$date <- as.Date(allshots_period_sum$date)
 allshots_game_sum$date <- as.Date(allshots_game_sum$date)
 allshots_period_sum$MATCHUP <- NULL
 
-names(allshots_game_sum)[4:11] <- paste0(names(allshots_game_sum)[4:11], "_game")
+names(allshots_game_sum)[4:13] <- paste0(names(allshots_game_sum)[4:13], "_game")
 nba_wl_games$date <- as.Date(str_extract(nba_wl_games$gcd, "[0-9]{8}"), "%Y%m%d")
 nba_wl_games <- inner_join(nba_wl_games, allshots_period_sum)
 nba_wl_games <- inner_join(nba_wl_games, allshots_game_sum)
@@ -275,15 +284,5 @@ for(i in 1:4){
   names(nba_wl_games)[n] <- changeNames(i, names(nba_wl_games)[n])
 }
 
-## getting highlight url
-data(boxes)
-nba_wl_games$video <- vector(mode='character', length=nrow(nba_wl_games))
-b <- boxes[[1]]
-for(b in boxes){
-  d <- unique(b[['boxscore//game']][,c('gcd', 'vid')])
-  rownames(d) <- d$gcd
-  inds <- nba_wl_games$gcd %in% rownames(d)
-  nba_wl_games$video[inds] <- d[nba_wl_games$gcd[inds], 'vid']
-}
 devtools::use_data(nba_wl_games, overwrite=TRUE)
 

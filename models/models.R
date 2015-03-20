@@ -1,23 +1,23 @@
 # nothing.
-allvars <- c('WIN', 'Q1_diff', 'Q2_diff', 'Q3_diff')
+allvars <- c('WIN', 'P1_diff', 'P2_diff', 'P3_diff')
 nba_wl_games <- nba_wl_games[complete.cases(nba_wl_games[,allvars]), ]
-m1 <- glm(WIN ~ Q1_diff, data=nba_wl_games, family=binomial, model = FALSE)
-m2 <- glm(WIN ~ Q1_diff + Q2_diff, data=nba_wl_games, family=binomial, model = FALSE)
-m3 <- glm(WIN ~ Q1_diff + Q2_diff + Q3_diff,
+m1 <- glm(WIN ~ P1_diff, data=nba_wl_games, family=binomial, model = FALSE)
+m2 <- glm(WIN ~ P1_diff + P2_diff, data=nba_wl_games, family=binomial, model = FALSE)
+m3 <- glm(WIN ~ P1_diff + P2_diff + P3_diff,
           data=nba_wl_games, family=binomial, model = FALSE)
 
-nba_wl_games$q1_win_prob <- m1$fitted.values
-nba_wl_games$q2_win_prob <- m2$fitted.values
-nba_wl_games$q3_win_prob <- m3$fitted.values
+nba_wl_games$p1_win_prob <- m1$fitted.values
+nba_wl_games$p2_win_prob <- m2$fitted.values
+nba_wl_games$p3_win_prob <- m3$fitted.values
 
 output$models <- renderUI({
   fluidRow(
     column(width = 2,
-           sliderInput("mq1", h4('Q1 margin'), min = -30, max = 30,
+           sliderInput("mq1", h4('P1 margin'), min = -30, max = 30,
                        step = 1, value = 0, ticks = FALSE, animate = TRUE),
-           sliderInput("mq2", h4('Q2 margin'), min = -30, max = 30,
+           sliderInput("mq2", h4('P2 margin'), min = -30, max = 30,
                        step = 1, value = 0, ticks = FALSE, animate = TRUE),
-           sliderInput("mq3", h4('Q3 margin'), min = -30, max = 30,
+           sliderInput("mq3", h4('P3 margin'), min = -30, max = 30,
                        step = 1, value = 0, ticks = FALSE, animate = TRUE)
     ),
     column(width = 8, offset = 1,
@@ -46,9 +46,9 @@ output$model_description <- renderUI({
     ),
     column(width = 7, offset = 0,
            selectInput('winProbColumn', 'Sort by low probability at:',
-                       choices = list('Q1' = 'q1_win_prob',
-                                      'Q2' = 'q2_win_prob',
-                                      'Q3' = 'q3_win_prob'
+                       choices = list('P1' = 'p1_win_prob',
+                                      'P2' = 'p2_win_prob',
+                                      'P3' = 'p3_win_prob'
                                       ),
                        selected = 'Q1',
                        width = "20%"),
@@ -88,19 +88,19 @@ output$upsets <- renderDataTable({
 output$preds <- renderGgd3({
   newd <- data.frame(
     margin = -30:30,
-    q1_margin = predict(m1, newdata = data.frame(Q1_diff = -30:30), type='response'),
-    q2_margin = predict(m2, newdata = data.frame(Q1_diff = input$mq1,
-                                          Q2_diff = -30:30), type='response'),
-    q3_margin = predict(m3, newdata = data.frame(Q1_diff = input$mq1,
-                                          Q2_diff = input$mq2,
-                                          Q3_diff = -30:30), type='response')
+    p1_margin = predict(m1, newdata = data.frame(P1_diff = -30:30), type='response'),
+    p2_margin = predict(m2, newdata = data.frame(P1_diff = input$mq1,
+                                          P2_diff = -30:30), type='response'),
+    p3_margin = predict(m3, newdata = data.frame(P1_diff = input$mq1,
+                                          P2_diff = input$mq2,
+                                          P3_diff = -30:30), type='response')
   )
   newd <- melt(newd, id.vars = 'margin')
   newd$variable <- gsub('_', ' ', as.character(newd$variable))
   newd$highlight <- '0'
-  newd[(newd$margin == input$mq1) & (newd$variable == 'q1 margin'), 'highlight'] <- '1'
-  newd[newd$margin == input$mq2 & newd$variable == 'q2 margin', 'highlight'] <- '1'
-  newd[newd$margin == input$mq3 & newd$variable == 'q3 margin', 'highlight'] <- '1'
+  newd[(newd$margin == input$mq1) & (newd$variable == 'p1 margin'), 'highlight'] <- '1'
+  newd[newd$margin == input$mq2 & newd$variable == 'p2 margin', 'highlight'] <- '1'
+  newd[newd$margin == input$mq3 & newd$variable == 'p3 margin', 'highlight'] <- '1'
   ggd3(data = newd,
        height = '200px',
        layers = list(l1=list(geom='line'), l2=list(geom='point')),

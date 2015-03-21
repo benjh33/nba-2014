@@ -1,14 +1,3 @@
-# nothing.
-allvars <- c('WIN', 'P1_diff', 'P2_diff', 'P3_diff')
-nba_wl_games <- nba_wl_games[complete.cases(nba_wl_games[,allvars]), ]
-m1 <- glm(WIN ~ P1_diff, data=nba_wl_games, family=binomial, model = FALSE)
-m2 <- glm(WIN ~ P1_diff + P2_diff, data=nba_wl_games, family=binomial, model = FALSE)
-m3 <- glm(WIN ~ P1_diff + P2_diff + P3_diff,
-          data=nba_wl_games, family=binomial, model = FALSE)
-
-nba_wl_games$p1_win_prob <- m1$fitted.values
-nba_wl_games$p2_win_prob <- m2$fitted.values
-nba_wl_games$p3_win_prob <- m3$fitted.values
 
 output$models <- renderUI({
   fluidRow(

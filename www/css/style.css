@@ -14,11 +14,11 @@ ul.nav li.dropdown:hover > ul.dropdown-submenu {
 }
 
 
-#preds .background,#teamScatter .background{
+#preds .background,#teamScatter .background, #varimp .background {
   fill: white;
 }
 
-#preds .domain, .tick line, #teamScatter .domain, .tick line{
+#varimp .domain, #preds .domain, .tick line, #teamScatter .domain, .tick line{
   stroke: none
 }
 .facet-label-x {

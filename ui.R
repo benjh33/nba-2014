@@ -35,6 +35,6 @@ shinyUI(
                     offset = 1
     )
     ),
-    title = "NBA shot explorer"
+    title = "NBA 2013-2014 Season"
   )
 )

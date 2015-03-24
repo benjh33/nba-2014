@@ -1,6 +1,6 @@
 # Predictive power of game data
 
-Obviously, the best indicator of a win is the score at any given moment of a game. I have attempted to improve on the score-only models by using game level event statistics. The models used are `glmnet`, `gmb`, and `randomForest`, chosen mostly because I have a fair number of variables and each algorithm has variable selection more or less baked in.
+Obviously, the best indicator of a win is the score at any given moment of a game. I have attempted to improve on the score-only models by using game level event statistics. The models used are `glmnet`, `gbm`, and `randomForest`, chosen mostly because I have a fair number of variables and each algorithm has variable selection more or less baked in.
 
 Each algorithm is executed with several combinations of parameters (lambda, alpha, mtry, etc.), each time with 10-fold cross-validation executed ten times. 
 

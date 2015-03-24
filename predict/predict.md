@@ -6,7 +6,7 @@ Each algorithm is executed with several combinations of parameters (lambda, alph
 
 Variable names can be guessed at pretty easily knowing that the period number the variable refers to is appended after an underscore. Names like "PROP\_3\_3" mean the proportion of attempted shots that were three-pointers in the third period. Period point margins are called "P1_diff" - etc. 
 
-A scatter plot matrix can be configured based on any of the available variables. As you can see, there is no overwhelming linear relationship between winning and predictive variables. Several are correlated, but only `TOUCH_TIME` proved to be correlated above 0.75.
+A scatter plot matrix can be configured based on any of the available variables. As you can see, there is no overwhelming linear relationship between winning and predictive variables. Several are correlated, but only the `TOUCH_TIME` variables proved to be correlated above 0.75 (amongst themselves, not with wins).
 
 ROC plots of the predictions for each of the three models on the test data set, per period, are shown as labeled in the tabs. I am suspicious of the random forest results, but it certainly is the winner.
 
